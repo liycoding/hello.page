@@ -18,18 +18,7 @@ function getAllImages() {
       "src": "images/68747470733a2f2f6d656469612e77696b692d706f7765722e636f6d2f696d672f6d6f636b7570322e706e67.png",
       "title": "图片 1",
       "alt": "图片 1"
-    },
-    {
-      "src": "images/68747470733a2f2f73322e6c6f6c692e6e65742f323032352f30382f30322f456a495a3158364d534871556c54442e706e67.png",
-      "title": "图片 2",
-      "alt": "图片 2"
-    },
-    {
-      "src": "images/iShot_2025-09-13_16.47.17的副本.png",
-      "title": "图片 2",
-      "alt": "图片 2"
     }
-    
   ];
 }
 
@@ -80,16 +69,52 @@ function createImageElement(imageInfo) {
   return container;
 }
 
+// 环境检测函数
+function isLocalDevelopment() {
+  // 检测是否为本地开发环境
+  return window.location.protocol === 'file:' || 
+         window.location.hostname === 'localhost' || 
+         window.location.hostname === '127.0.0.1' ||
+         window.location.hostname.includes('localhost');
+}
+
 // 加载并显示图片
-function loadImages() {
+async function loadImages() {
   const gallery = document.getElementById('image-gallery');
   
   // 显示加载状态
   gallery.innerHTML = '<p style="text-align: center; color: #666; font-size: 18px;">正在加载图片...</p>';
   
   try {
-    // 直接使用内嵌的图片数据
-    const imageData = getAllImages();
+    let imageData = [];
+    
+    // 根据环境选择加载方式
+    if (isLocalDevelopment()) {
+      // 本地开发：使用内嵌数据
+      console.log('本地开发环境：使用内嵌图片数据');
+      imageData = getAllImages();
+    } else {
+      // 线上部署：优先使用 images.json
+      console.log('线上环境：尝试从 images.json 加载图片...');
+      try {
+        const response = await fetch('images.json');
+        if (response.ok) {
+          const data = await response.json();
+          imageData = data.images || [];
+          console.log('从 images.json 加载成功，图片数量:', imageData.length);
+        } else {
+          console.log('images.json 响应失败:', response.status);
+        }
+      } catch (error) {
+        console.log('无法加载 images.json:', error.message);
+      }
+      
+      // 如果 images.json 加载失败，回退到内嵌数据
+      if (imageData.length === 0) {
+        console.log('回退到内嵌图片数据');
+        imageData = getAllImages();
+      }
+    }
     
     if (imageData.length === 0) {
       gallery.innerHTML = '<p style="text-align: center; color: #666; font-size: 18px;">暂无图片</p>';
