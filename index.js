@@ -23,7 +23,13 @@ function getAllImages() {
       "src": "images/68747470733a2f2f73322e6c6f6c692e6e65742f323032352f30382f30322f456a495a3158364d534871556c54442e706e67.png",
       "title": "图片 2",
       "alt": "图片 2"
+    },
+    {
+      "src": "images/iShot_2025-09-13_16.47.17的副本.png",
+      "title": "图片 2",
+      "alt": "图片 2"
     }
+    
   ];
 }
 
